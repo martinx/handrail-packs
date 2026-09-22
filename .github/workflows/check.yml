@@ -1,0 +1,24 @@
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: install the released handrail (same installer users run; no sudo)
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          curl -fsSL https://handrail.bitey.ai/install.sh | HANDRAIL_INSTALL_DIR="$HOME/.local/bin" sh
+          "$HOME/.local/bin/handrail" --version
+      - run: '"$HOME/.local/bin/handrail" check .'
